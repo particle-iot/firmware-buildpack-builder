@@ -1,7 +1,7 @@
 FROM particle/buildpack-hal
 
-COPY . /firmware
-COPY ./docker /
+COPY ../firmware /firmware
+COPY . /
 
 RUN /scripts/build-all-platforms.sh
 

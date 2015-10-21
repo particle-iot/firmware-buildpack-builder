@@ -1,0 +1,7 @@
+#!/bin/bash
+run-in-container() {
+	docker run --rm -w /firmware particle/buildpack-particle-firmware $1
+}
+
+run-in-container ./ci/unit_tests.sh
+run-in-container ./ci/enumerate_build_matrix.sh
