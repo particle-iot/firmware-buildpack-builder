@@ -1,3 +1,2 @@
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
-echo `pwd`
 docker build -t particle/buildpack-particle-firmware .
