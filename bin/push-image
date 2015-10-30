@@ -1,5 +1,8 @@
 #!/bin/bash
 if [ ! -z "$TRAVIS_TAG" ]; then
+	TAG=$TRAVIS_TAG
 	docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TRAVIS_TAG
+else
+	TAG=latest
 fi
-docker push $DOCKER_IMAGE_NAME
+docker push $DOCKER_IMAGE_NAME:$TAG
