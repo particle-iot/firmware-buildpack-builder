@@ -1,2 +1,3 @@
+#!/bin/bash
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
-docker build -t particle/buildpack-particle-firmware .
+docker build -t $DOCKER_IMAGE_NAME .

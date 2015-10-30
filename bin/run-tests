@@ -1,2 +1,2 @@
 #!/bin/bash
-docker run --rm -w /firmware particle/buildpack-particle-firmware /firmware/ci/run_tests.sh
+docker run --rm -w /firmware $DOCKER_IMAGE_NAME /firmware/ci/run_tests.sh
