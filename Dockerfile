@@ -1,4 +1,4 @@
-FROM particle/buildpack-hal:0.0.3
+FROM particle/buildpack-hal:0.0.4
 
 COPY . /
 

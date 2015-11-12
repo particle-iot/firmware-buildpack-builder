@@ -6,7 +6,7 @@ This repo is used by [`firmware` Travis CI build](https://travis-ci.org/spark/fi
 |---|
 |  **Particle firmware (you are here)**  |
 | [HAL](https://github.com/spark/buildpack-hal) / [Legacy](https://github.com/spark/buildpack-0.3.x)   |
-| [Wiring preprocessor](https://github.com/spark/buildpack-arduino-preprocessor) |
+| [Wiring preprocessor](https://github.com/spark/buildpack-wiring-preprocessor) |
 | [Base](https://github.com/spark/buildpack-base) |
 
 ## Flow
