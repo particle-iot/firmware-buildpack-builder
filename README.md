@@ -13,7 +13,7 @@ This repo is used by [`firmware` Travis CI build](https://travis-ci.org/spark/fi
 
 When doing a Travis CI job following scripts should be executed in order:
 
-1. `bin/buid-image`
+1. `bin/build-image`
 * `bin/run-tests`
 * if previous script was a success then `bin/push-image`
 
