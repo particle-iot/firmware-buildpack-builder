@@ -1,0 +1,30 @@
+#!/bin/bash
+cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+# Read the defaults
+source scripts/constants
+
+if [ -z $DOCKER_IMAGE_NAME ]; then
+	printf "${RED}You need to provide DOCKER_IMAGE_NAME${NC}\n"
+	exit
+fi
+
+# Read firmware build configuration
+source firmware/.buildpackrc
+
+# Create main Dockerfile
+echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" > Dockerfile
+cat Dockerfile.template >> Dockerfile
+# Build main image
+printf "${GREEN}Building main image based on${NC} "
+printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
+docker build -t $DOCKER_IMAGE_NAME .
+echo
+
+# Create test Dockerfile
+echo "FROM ${DOCKER_IMAGE_NAME}" > Dockerfile.test
+cat Dockerfile.test.template >> Dockerfile.test
+# Build test image
+printf "${GREEN}Building test image${NC}...\n"
+docker build -f Dockerfile.test \
+	-t $DOCKER_IMAGE_NAME-test .
+echo

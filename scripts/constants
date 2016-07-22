@@ -1,0 +1,9 @@
+# Colors for clearer output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Default base buildpack name and version
+BUILDPACK_BASE=particle/buildpack-hal
+BUILDPACK_VERSION=0.0.9

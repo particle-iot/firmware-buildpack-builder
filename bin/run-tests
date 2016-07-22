@@ -1,2 +1,7 @@
 #!/bin/bash
-docker run --rm -w /firmware $DOCKER_IMAGE_NAME /firmware/ci/run_tests.sh
+# Override BATS tests with firmware ones
+source /bin/setup-env
+source /bin/setup-hal-env
+cd $FIRMWARE_PATH
+unset APPDIR
+./ci/run_tests.sh

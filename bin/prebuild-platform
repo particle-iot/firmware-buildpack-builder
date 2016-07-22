@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Setup constants
+source /bin/setup-hal-env
+
+PLATFORM_NAME="PLATFORM=$1"
+
+cd $FIRMWARE_PATH/main
+eval "$PLATFORM_NAME make"
+
+if [ "$MODULAR" == "y" ]; then
+  cd $FIRMWARE_PATH/modules
+  eval "$PLATFORM_NAME make"
+fi
