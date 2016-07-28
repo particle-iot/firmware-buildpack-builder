@@ -1,5 +1,8 @@
 #!/bin/bash
+cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+# Read the defaults
 source scripts/constants
+
 printf "${GREEN}Running tests inside of container...${NC}\n"
 docker run --rm -w /firmware $DOCKER_IMAGE_NAME-test /bin/run-tests
 echo
