@@ -24,7 +24,7 @@ function prebuild-platform {
 	printf "${GREEN}Prebuilding platform${NC} "
 	printf "${YELLOW}${PLATFORM}${NC}...\n"
 	# Check if this platform requires different buildpack variation
-	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM}"
+	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM^^}"
 	if [ -z ${!VARIATION} ]; then
 		BUILDPACK_TAG="${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}"
 	else
