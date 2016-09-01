@@ -1,10 +1,11 @@
 #!/bin/bash
+FIRMWARE_PATH=`pwd`
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 # Read the defaults
 source scripts/constants
 
 # Read firmware build configuration
-source firmware/.buildpackrc
+source $FIRMWARE_PATH/.buildpackrc
 
 # If git tag is being build, tag the Docker image too
 if [ ! -z "$TRAVIS_TAG" ]; then

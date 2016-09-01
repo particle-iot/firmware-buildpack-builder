@@ -1,4 +1,5 @@
 #!/bin/bash
+FIRMWARE_PATH=`pwd`
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 # Read the defaults
 source scripts/constants
@@ -9,7 +10,7 @@ if [ -z $DOCKER_IMAGE_NAME ]; then
 fi
 
 # Read firmware build configuration
-source firmware/.buildpackrc
+source $FIRMWARE_PATH/.buildpackrc
 
 # Create main Dockerfile
 echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" > Dockerfile
@@ -17,7 +18,7 @@ cat Dockerfile.template >> Dockerfile
 # Build main image
 printf "${GREEN}Building main image based on${NC} "
 printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
-docker build -t $DOCKER_IMAGE_NAME .
+docker build -t $DOCKER_IMAGE_NAME --build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` .
 echo
 
 # Create test Dockerfile

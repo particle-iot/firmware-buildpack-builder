@@ -1,3 +1,5 @@
 
+ARG FIRMWARE_PATH
 WORKDIR /
-COPY . /
+COPY bin /bin
+COPY ${FIRMWARE_PATH} /firmware
