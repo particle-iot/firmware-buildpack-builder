@@ -52,6 +52,7 @@ function prebuild-platform {
 	docker build -f Dockerfile.platform \
 		--build-arg PLATFORM=$PLATFORM \
 		--build-arg MODULAR=$MODULAR \
+		--build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` \
 		-t $DOCKER_IMAGE_NAME .
 	if [ $? -eq 0 ]; then
 		printf "${GREEN}Tagging${NC} "
