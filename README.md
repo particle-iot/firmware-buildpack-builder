@@ -17,10 +17,22 @@ When doing a Travis CI job following scripts should be executed in order:
 1. `scripts/build-image` which will:
   1. Build `$DOCKER_IMAGE_NAME` image
   2. Build `$DOCKER_IMAGE_NAME-test` image which includes test tools
-* `scripts/run-tests-in-container` which will:
+2. `scripts/run-tests-in-container` which will:
   1. Run [`/bin/run-tests`](bin/run-tests) inside of `$DOCKER_IMAGE_NAME-test` container
 
-* if previous script was a success then `scripts/push-image`
+3. if previous script was a success then `scripts/push-image` which:
+  1. if `TRAVIS_TAG` was set will:
+    1. push `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` to Docker Hub
+    2. create prebuild images for each platform specified in [`.buildpackrc`](https://github.com/spark/firmware/blob/develop/.buildpackrc) `RELEASE_PLATFORMS` and `PRERELEASE_PLATFORMS`
+    3. push those images too
+
+### Why is it building so many images?
+
+Here's breakout of all images:
+
+* `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` is an image that contains the toolchain (usually from [`buildpack-hal`](https://github.com/spark/buildpack-hal)) and a copy of firmware at specific version (one that the scripts were run against)
+* `$DOCKER_IMAGE_NAME-test` contains the same things as `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` but also bundles host `gcc` for running unit tests. This one is a throw away
+* `$DOCKER_IMAGE_NAME:$TRAVIS_TAG-$PLATFORM` contains the same things as `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` but also intermediate files for `$PLATFORM` making compilation for it faster
 
 #### Example `.travis.yml` file
 
