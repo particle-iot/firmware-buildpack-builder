@@ -1,0 +1,6 @@
+prerelease: true, feature: true, draft: false
+==> for initial testing with CLI
+
+prerelease: false, make internal_version: larger than other
+==> for making default version
+

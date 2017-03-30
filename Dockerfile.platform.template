@@ -1,5 +1,4 @@
 
 ARG PLATFORM
 ARG MODULAR
-ENV FIRMWARE_REPO=not-used
 RUN /bin/prebuild-platform ${PLATFORM}

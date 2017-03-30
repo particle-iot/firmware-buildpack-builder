@@ -27,9 +27,9 @@ function prebuild-platform {
 	# Check if this platform requires different buildpack variation
 	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM^^}"
 	if [ -z ${!VARIATION} ]; then
-		BUILDPACK_TAG="${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}"
+		BUILDPACK_TAG="${BUILDPACK_VERSION}"
 	else
-		BUILDPACK_TAG="${BUILDPACK_VERSION}-${!VARIATION}"
+		BUILDPACK_TAG="${BUILDPACK_VERSION}"
 		printf "   ${YELLOW}Custom buildpack variation:${NC} ${BUILDPACK_TAG}\n"
 	fi
 
@@ -49,7 +49,7 @@ function prebuild-platform {
 
 	printf "${GREEN}Building for${NC} "
 	printf "${PLATFORM}${NC}...\n"
-	docker build -f Dockerfile.platform \
+	docker build --no-cache -f Dockerfile.platform \
 		--build-arg PLATFORM=$PLATFORM \
 		--build-arg MODULAR=$MODULAR \
 		--build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` \

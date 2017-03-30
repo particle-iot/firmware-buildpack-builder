@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x
+
 FIRMWARE_PATH=`pwd`
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 # Read the defaults
@@ -13,12 +15,12 @@ fi
 source $FIRMWARE_PATH/.buildpackrc
 
 # Create main Dockerfile
-echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" > Dockerfile
+echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_VERSION}" > Dockerfile
 cat Dockerfile.template >> Dockerfile
 # Build main image
 printf "${GREEN}Building main image based on${NC} "
-printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
-docker build -t $DOCKER_IMAGE_NAME --build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` .
+printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}${NC}...\n"
+docker build --no-cache -t $DOCKER_IMAGE_NAME --build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` .
 echo
 
 # Create test Dockerfile
