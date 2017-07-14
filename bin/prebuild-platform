@@ -10,5 +10,5 @@ eval "$PLATFORM_NAME make"
 
 if [ "$MODULAR" == "y" ]; then
   cd $FIRMWARE_PATH/modules
-  eval "$PLATFORM_NAME make"
+  eval "$PLATFORM_NAME make clean all"
 fi
