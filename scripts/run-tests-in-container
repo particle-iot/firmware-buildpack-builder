@@ -4,4 +4,4 @@ cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source scripts/constants
 
 printf "${GREEN}Running tests inside of container...${NC}\n"
-docker run --rm -w /firmware $DOCKER_IMAGE_NAME-test /bin/run-tests
+docker run --rm -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests
