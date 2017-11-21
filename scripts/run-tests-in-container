@@ -6,4 +6,4 @@ source scripts/constants
 printf "${GREEN}Running tests inside of container...${NC}\n"
 rm -rf .build/
 mkdir -p .build
-docker run --rm -v $(pwd)/.build/:/firmware/test/unit_tests/.build/ -w /firmware $DOCKER_IMAGE_NAME-test /bin/run-tests
+docker run --rm -v $(pwd)/.build/:/firmware/test/unit_tests/.build/ -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests
