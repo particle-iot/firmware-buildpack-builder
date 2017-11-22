@@ -3,5 +3,5 @@ cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 # Read the defaults
 source scripts/constants
 
-printf "${GREEN}Running tests inside of container...${NC}\n"
+printf "${GREEN}Running tests inside of container...${NC} ${BUILD_PLATFORM[*]} \n"
 docker run --rm -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests
