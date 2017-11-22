@@ -30,7 +30,9 @@ cat Dockerfile.template >> $Dockerfile
 printf "${GREEN}Building main image based on${NC} "
 printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
 pushd $BUILD_ROOT
-docker build -t $DOCKER_IMAGE_NAME --build-arg FIRMWARE_PATH=$FIRMWARE_PATH $BUILD_ROOT
+cmd="docker build -t $DOCKER_IMAGE_NAME --build-arg FIRMWARE_PATH=$FIRMWARE_PATH $BUILD_ROOT"
+echo $cmd
+$cmd || die
 popd
 echo
 
@@ -42,6 +44,6 @@ cat Dockerfile.test.template >> $DockerfileTest
 printf "${GREEN}Building test image${NC}...\n"
 pushd $BUILD_ROOT
 docker build -f $DockerfileTest \
-	-t $DOCKER_IMAGE_NAME-test .
+	-t $DOCKER_IMAGE_NAME-test . || die
 popd
 echo
