@@ -2,5 +2,5 @@
 ARG FIRMWARE_PATH
 ENV FIRMWARE_REPO=not-used
 WORKDIR /
-COPY bin /bin
+COPY ${FIRMWARE_PATH}/buildpack/bin /bin
 COPY ${FIRMWARE_PATH} /firmware

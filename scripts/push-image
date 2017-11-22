@@ -6,6 +6,7 @@ source scripts/constants
 
 # Read firmware build configuration
 source $FIRMWARE_PATH/.buildpackrc
+source $FIRMWARE_PATH/ci/functions.sh
 
 # If git tag is being build, tag the Docker image too
 if [ ! -z "$TRAVIS_TAG" ]; then
@@ -43,17 +44,18 @@ function prebuild-platform {
 	done
 
 	# Create Dockerfile
-	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > Dockerfile.platform
-	cat Dockerfile.template >> Dockerfile.platform
-	cat Dockerfile.platform.template >> Dockerfile.platform
+        DockerfilePlatform=$BUILD_ROOT/Dockerfile.platform
+	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > $DockerfilePlatform
+	cat Dockerfile.template >> $DockerfilePlatform
+	cat Dockerfile.platform.template >> $DockerfilePlatform
 
 	printf "${GREEN}Building for${NC} "
 	printf "${PLATFORM}${NC}...\n"
-	docker build -f Dockerfile.platform \
+	docker build -f $DockerfilePlatform \
 		--build-arg PLATFORM=$PLATFORM \
 		--build-arg MODULAR=$MODULAR \
 		--build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` \
-		-t $DOCKER_IMAGE_NAME .
+		-t $DOCKER_IMAGE_NAME $BUILD_ROOT
 	if [ $? -eq 0 ]; then
 		printf "${GREEN}Tagging${NC} "
 		printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}-${PLATFORM}${NC}...\n"
@@ -62,6 +64,9 @@ function prebuild-platform {
 	fi
 	echo
 }
+
+filterPlatform RELEASE_PLATFORM
+filterPlatform PRERELEASE_PLATFORM
 
 # Prebuild images for platforms
 if [ ! -z "$TRAVIS_TAG" ]; then
