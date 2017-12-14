@@ -1,6 +1,8 @@
 #!/bin/bash
 FIRMWARE_PATH=`pwd`
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+BUILD_ROOT=$FIRMWARE_PATH
+
 # Read the defaults
 source scripts/constants
 
@@ -44,7 +46,7 @@ function prebuild-platform {
 	done
 
 	# Create Dockerfile
-        DockerfilePlatform=$BUILD_ROOT/Dockerfile.platform
+  DockerfilePlatform=$BUILD_ROOT/Dockerfile.platform
 	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > $DockerfilePlatform
 	cat Dockerfile.template >> $DockerfilePlatform
 	cat Dockerfile.platform.template >> $DockerfilePlatform
