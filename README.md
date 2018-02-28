@@ -7,8 +7,8 @@ This repo is used by [`firmware` Travis CI build](https://travis-ci.org/spark/fi
 | |
 |---|
 |  **Particle firmware (you are here)**  |
-| [HAL](https://github.com/spark/buildpack-hal) / [Legacy](https://github.com/spark/buildpack-0.3.x)   |
-| [Base](https://github.com/spark/buildpack-base) |
+| [HAL](https://github.com/particle-iot/buildpack-hal) / [Legacy](https://github.com/particle-iot/buildpack-0.3.x)   |
+| [Base](https://github.com/particle-iot/buildpack-base) |
 
 ## Flow
 
@@ -23,20 +23,20 @@ When doing a Travis CI job following scripts should be executed in order:
 3. if previous script was a success then `scripts/push-image` which:
   1. if `TRAVIS_TAG` was set will:
     1. push `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` to Docker Hub
-    2. create prebuild images for each platform specified in [`.buildpackrc`](https://github.com/spark/firmware/blob/develop/.buildpackrc) `RELEASE_PLATFORMS` and `PRERELEASE_PLATFORMS`
+    2. create prebuild images for each platform specified in [`.buildpackrc`](https://github.com/particle-iot/firmware/blob/develop/.buildpackrc) `RELEASE_PLATFORMS` and `PRERELEASE_PLATFORMS`
     3. push those images too
 
 ### Why is it building so many images?
 
 Here's breakout of all images:
 
-* `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` is an image that contains the toolchain (usually from [`buildpack-hal`](https://github.com/spark/buildpack-hal)) and a copy of firmware at specific version (one that the scripts were run against)
+* `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` is an image that contains the toolchain (usually from [`buildpack-hal`](https://github.com/particle-iot/buildpack-hal)) and a copy of firmware at specific version (one that the scripts were run against)
 * `$DOCKER_IMAGE_NAME-test` contains the same things as `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` but also bundles host `gcc` for running unit tests. This one is a throw away
 * `$DOCKER_IMAGE_NAME:$TRAVIS_TAG-$PLATFORM` contains the same things as `$DOCKER_IMAGE_NAME:$TRAVIS_TAG` but also intermediate files for `$PLATFORM` making compilation for it faster
 
 #### Example `.travis.yml` file
 
-If you're forking our [firmware repository](https://github.com/spark/firmware/) you can build your own images with firmware.
+If you're forking our [firmware repository](https://github.com/particle-iot/firmware/) you can build your own images with firmware.
 To do so, edit `.travis.yml` file to include:
 
 ```yaml
@@ -45,7 +45,7 @@ services:
   - docker
 install:  
   - docker login --email=$DOCKER_HUB_EMAIL --username=$DOCKER_HUB_USERNAME --password=$DOCKER_HUB_PASSWORD
-  - wget https://github.com/spark/firmware-buildpack-builder/archive/master.tar.gz -O - | tar -xz -C ../ --strip-components 1
+  - wget https://github.com/particle-iot/firmware-buildpack-builder/archive/master.tar.gz -O - | tar -xz -C ../ --strip-components 1
   - ../scripts/build-image
 script:  
   - ../scripts/run-tests-in-container
