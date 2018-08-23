@@ -1,6 +1,4 @@
-
-ARG FIRMWARE_PATH
+FROM particle/firmware-buildpack-builder
 ENV FIRMWARE_REPO=not-used
 WORKDIR /
-COPY bin /bin
-COPY ${FIRMWARE_PATH} /firmware
+COPY . /firmware

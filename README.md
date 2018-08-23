@@ -10,7 +10,37 @@ This repo is used by [`firmware` Travis CI build](https://travis-ci.org/spark/fi
 | [HAL](https://github.com/particle-iot/buildpack-hal) / [Legacy](https://github.com/particle-iot/buildpack-0.3.x)   |
 | [Base](https://github.com/particle-iot/buildpack-base) |
 
-## Flow
+## Running scripts locally when developing a buildpack
+
+First clone and set up this repo:
+```
+$ git clone git@github.com:particle-iot/firmware-buildpack-builder.git
+$ cd firmware-buildpack-builder
+$ export FIRMWARE_PATH=path/to/particle/firmware
+$ export DOCKER_IMAGE_NAME=particle/your-firmware-name
+```
+
+### To build a firmware buildpack (containing just toolchain + firmware) run:
+```
+$ script/build-image
+```
+**Note:** the firmware buildpack inherits `BUILDPACK_VARIATION` image specified in `.buildpackrc` file in your firmware. If you need to use different toolchain it is recommended to create a different variation and specify it in the `.buildpackrc` file.
+
+### To build a buildpack with precompiled intermediate files for a platform used by the cloud compiler (same as firmware buildpack + it runs `make` in all important dirs)
+
+First empty the `RELEASE_PLATFORMS` array in `.buildpackrc` and then add your platform to `PRERELEASE_PLATFORMS`. Then run:
+
+```
+$ script/build-platform-images
+```
+
+Once the images are built you can test them with:
+
+```
+$ docker run --rm -it -v EXAMPLE_APP_DIRECTORY:/input -e PLATFORM_ID=EXAMPLE_PLATFORM_ID $DOCKER_IMAGE_NAME
+```
+
+## Flow inside Travis CI
 
 When doing a Travis CI job following scripts should be executed in order:
 

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+function prebuild-platform {
+	PLATFORM=$1
+
+	printf "${GREEN}Prebuilding platform${NC} "
+	printf "${YELLOW}${PLATFORM}${NC}...\n"
+	# Check if this platform requires different buildpack variation
+	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM^^}"
+	if [ -z ${!VARIATION} ]; then
+		BUILDPACK_TAG="${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}"
+	else
+		BUILDPACK_TAG="${BUILDPACK_VERSION}-${!VARIATION}"
+		printf "   ${YELLOW}Custom buildpack variation:${NC} ${BUILDPACK_TAG}\n"
+	fi
+
+	# Check if platform requires modules to be prebuild
+	MODULAR=n
+	for modular_platform in "${MODULAR_PLATFORMS[@]}"
+	do
+		if [ $PLATFORM == $modular_platform ]; then
+			MODULAR=y
+		fi
+	done
+
+	tmpfile=$(mktemp /tmp/dockerfile.XXXXXX)
+
+	# Create Dockerfile
+	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > $tmpfile
+	echo "COPY bin /bin" >> $tmpfile
+	docker build -t particle/firmware-buildpack-builder -f $tmpfile .
+
+	cat Dockerfile.template > $tmpfile
+	cat Dockerfile.platform.template >> $tmpfile
+
+	printf "${GREEN}Building for${NC} "
+	printf "${PLATFORM}${NC}...\n"
+	docker build -f $tmpfile \
+		--build-arg PLATFORM=$PLATFORM \
+		--build-arg MODULAR=$MODULAR \
+		-t $DOCKER_IMAGE_NAME $FIRMWARE_PATH
+	if [ $? -eq 0 ]; then
+		printf "${GREEN}Tagging${NC} "
+		printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}-${PLATFORM}${NC}...\n"
+		docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
+		docker push $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
+	fi
+	rm $tmpfile
+	echo
+}
