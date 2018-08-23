@@ -1,22 +1,18 @@
-#!/bin/bash
-FIRMWARE_PATH=`pwd`
+#!/usr/bin/env bash
+
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 BUILD_ROOT=$FIRMWARE_PATH
 
 # Read the defaults
 source scripts/constants
 
-# Read firmware build configuration
-source $FIRMWARE_PATH/.buildpackrc
-source $FIRMWARE_PATH/ci/functions.sh
-
 # If git tag is being build, tag the Docker image too
-if [ ! -z "$TRAVIS_TAG" ]; then
+if [[ ! -z "$TRAVIS_TAG" ]]; then
 	TAG=${TRAVIS_TAG#"v"}
-	docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG
 else
-	TAG=latest
+	TAG=`cd $FIRMWARE_PATH && git rev-parse --short HEAD`
 fi
+docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG
 
 printf "${GREEN}Tagging main image as${NC} "
 printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}${NC}...\n"
@@ -26,82 +22,7 @@ else
 	printf "${YELLOW}Not pushing the image, because this is not a tagged build"
 fi
 
-function prebuild-platform {
-	PLATFORM=$1
-
-	printf "${GREEN}Prebuilding platform${NC} "
-	printf "${YELLOW}${PLATFORM}${NC}...\n"
-	# Check if this platform requires different buildpack variation
-	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM^^}"
-	if [ -z ${!VARIATION} ]; then
-		BUILDPACK_TAG="${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}"
-	else
-		BUILDPACK_TAG="${BUILDPACK_VERSION}-${!VARIATION}"
-		printf "   ${YELLOW}Custom buildpack variation:${NC} ${BUILDPACK_TAG}\n"
-	fi
-
-	# Check if platform requires modules to be prebuild
-	MODULAR=n
-	for modular_platform in "${MODULAR_PLATFORMS[@]}"
-	do
-		if [ $PLATFORM == $modular_platform ]; then
-			MODULAR=y
-		fi
-	done
-
-	# Create Dockerfile
-	DockerfilePlatform=$BUILD_ROOT/Dockerfile.platform
-	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > $DockerfilePlatform
-	cat Dockerfile.template >> $DockerfilePlatform
-	cat Dockerfile.platform.template >> $DockerfilePlatform
-
-	printf "${GREEN}Building for${NC} "
-	printf "${PLATFORM}${NC}...\n"
-	docker build -f $DockerfilePlatform \
-		--build-arg PLATFORM=$PLATFORM \
-		--build-arg MODULAR=$MODULAR \
-		--build-arg FIRMWARE_PATH=`basename $FIRMWARE_PATH` \
-		-t $DOCKER_IMAGE_NAME $BUILD_ROOT
-	if [ $? -eq 0 ]; then
-		printf "${GREEN}Tagging${NC} "
-		printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}-${PLATFORM}${NC}...\n"
-		docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
-		docker push $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
-	fi
-	echo
-}
-
-filterPlatform RELEASE_PLATFORM
-filterPlatform PRERELEASE_PLATFORM
-
-function platformArrayContainsPlatform {
-	platform_array=($1)
-	for i in "${platform_array[@]}"
-	do
-		platform_array_lower=${i,,}
-		platform_lower=${2,,}
-		if [[ "${platform_array_lower}" == "${platform_lower}" ]] ; then
-			return 0
-		fi
-	done
-	return 1
-}
-
 # Prebuild images for platforms
 if [ ! -z "$TRAVIS_TAG" ]; then
-	# Prebuild releases
-	for platform in "${RELEASE_PLATFORMS[@]}"
-	do
-		if platformArrayContainsPlatform "${BUILD_PLATFORM[@]}" "$platform"; then
-			prebuild-platform $platform
-		fi
-	done
-
-	# Prebuild prereleases
-	for platform in "${PRERELEASE_PLATFORMS[@]}"
-	do
-		if platformArrayContainsPlatform "${BUILD_PLATFORM[@]}" "$platform"; then
-			prebuild-platform $platform
-		fi
-	done
+	source scripts/build-platform-images
 fi

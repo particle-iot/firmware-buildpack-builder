@@ -8,6 +8,10 @@ NC='\033[0m'
 BUILDPACK_BASE=particle/buildpack-hal
 BUILDPACK_VERSION=0.0.14
 
+if [[ -z $FIRMWARE_PATH ]]; then
+	FIRMWARE_PATH=`pwd`
+fi
+
 function die {
    echo "fatal error: $1"
    exit 1
