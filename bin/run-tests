@@ -1,7 +1,0 @@
-#!/bin/bash
-# Override BATS tests with firmware ones
-source /bin/setup-env
-source /bin/setup-hal-env
-cd $FIRMWARE_PATH
-unset APPDIR
-./ci/run_tests.sh
