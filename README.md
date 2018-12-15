@@ -18,11 +18,12 @@ $ git clone git@github.com:particle-iot/firmware-buildpack-builder.git
 $ cd firmware-buildpack-builder
 $ export FIRMWARE_PATH=path/to/particle/firmware
 $ export DOCKER_IMAGE_NAME=particle/your-firmware-name
+$ export TAG=a.b.c-rc.X
 ```
 
 ### To build a firmware buildpack (containing just toolchain + firmware) run:
 ```
-$ script/build-image
+$ scripts/build-image
 ```
 **Note:** the firmware buildpack inherits `BUILDPACK_VARIATION` image specified in `.buildpackrc` file in your firmware. If you need to use different toolchain it is recommended to create a different variation and specify it in the `.buildpackrc` file.
 
@@ -31,7 +32,7 @@ $ script/build-image
 First empty the `RELEASE_PLATFORMS` array in `.buildpackrc` and then add your platform to `PRERELEASE_PLATFORMS`. Then run:
 
 ```
-$ script/build-platform-images
+$ scripts/build-platform-images
 ```
 
 Once the images are built you can test them with:
