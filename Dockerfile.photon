@@ -1,10 +1,6 @@
-FROM particle/buildpack-hal:0.0.14-gcc-arm-none-eabi-5_3-2016q1
+FROM particle/buildpack-particle-firmware:dd9d5512a343d646176ebfb8c90fc6d672264583-photon-source
 
-ARG FIRMWARE_PATH
-WORKDIR /
 COPY bin /bin
-COPY ${FIRMWARE_PATH} /firmware
-
 ARG PLATFORM
 ARG MODULAR
 RUN /bin/prebuild-platform ${PLATFORM}
