@@ -17,10 +17,14 @@ if [ ! -z "$TRAVIS_TAG" ]; then
 else
 	TAG=latest
 fi
+
 printf "${GREEN}Tagging main image as${NC} "
 printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}${NC}...\n"
-docker push $DOCKER_IMAGE_NAME:$TAG
-echo
+if [ ! -z "$TRAVIS_TAG" ]; then
+	docker push $DOCKER_IMAGE_NAME:$TAG
+else
+	printf "${YELLOW}Not pushing the image, because this is not a tagged build"
+fi
 
 function prebuild-platform {
 	PLATFORM=$1
