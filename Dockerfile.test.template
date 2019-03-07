@@ -1,5 +1,5 @@
 
-RUN apt-get update -q && apt-get install -qy wget gcc-4.9 g++-4.9 \
+RUN apt-get update -q && apt-get install -qy wget gcc-4.9 g++-4.9 parallel \
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 \
   && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 60 \
   && apt-get clean && apt-get purge \
