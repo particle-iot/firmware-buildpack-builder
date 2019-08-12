@@ -6,7 +6,7 @@ NC='\033[0m'
 
 # Default base buildpack name and version
 BUILDPACK_BASE=particle/buildpack-hal
-BUILDPACK_VERSION=0.0.13
+BUILDPACK_VERSION=0.0.144
 
 if [[ -z $FIRMWARE_PATH ]]; then
 	FIRMWARE_PATH=`pwd`
