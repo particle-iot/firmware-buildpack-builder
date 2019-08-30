@@ -4,6 +4,6 @@ cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source scripts/constants
 
 printf "${GREEN}Running tests inside of container...${NC} ${BUILD_PLATFORM[*]} \n"
-rm -rf .build/
-mkdir -p .build
-docker run --rm -v $(pwd)/.build/:/firmware/test/unit_tests/.build/ -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests
+rm -rf /home/travis/build/.build/*
+mkdir -p /home/travis/build/.build
+docker run --rm -v /home/travis/build/.build/:/firmware/test/unit_tests/.build/ -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests

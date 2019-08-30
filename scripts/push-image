@@ -17,10 +17,14 @@ if [ ! -z "$TRAVIS_TAG" ]; then
 else
 	TAG=latest
 fi
+
 printf "${GREEN}Tagging main image as${NC} "
 printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}${NC}...\n"
-docker push $DOCKER_IMAGE_NAME:$TAG
-echo
+if [ ! -z "$TRAVIS_TAG" ]; then
+	docker push $DOCKER_IMAGE_NAME:$TAG
+else
+	printf "${YELLOW}Not pushing the image, because this is not a tagged build"
+fi
 
 function prebuild-platform {
 	PLATFORM=$1
@@ -46,7 +50,7 @@ function prebuild-platform {
 	done
 
 	# Create Dockerfile
-  DockerfilePlatform=$BUILD_ROOT/Dockerfile.platform
+	DockerfilePlatform=$BUILD_ROOT/Dockerfile.platform
 	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > $DockerfilePlatform
 	cat Dockerfile.template >> $DockerfilePlatform
 	cat Dockerfile.platform.template >> $DockerfilePlatform
@@ -70,17 +74,34 @@ function prebuild-platform {
 filterPlatform RELEASE_PLATFORM
 filterPlatform PRERELEASE_PLATFORM
 
+function platformArrayContainsPlatform {
+	platform_array=($1)
+	for i in "${platform_array[@]}"
+	do
+		platform_array_lower=${i,,}
+		platform_lower=${2,,}
+		if [[ "${platform_array_lower}" == "${platform_lower}" ]] ; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 # Prebuild images for platforms
 if [ ! -z "$TRAVIS_TAG" ]; then
 	# Prebuild releases
 	for platform in "${RELEASE_PLATFORMS[@]}"
 	do
-		prebuild-platform $platform
+		if platformArrayContainsPlatform "${BUILD_PLATFORM[@]}" "$platform"; then
+			prebuild-platform $platform
+		fi
 	done
 
 	# Prebuild prereleases
 	for platform in "${PRERELEASE_PLATFORMS[@]}"
 	do
-		prebuild-platform $platform
+		if platformArrayContainsPlatform "${BUILD_PLATFORM[@]}" "$platform"; then
+			prebuild-platform $platform
+		fi
 	done
 fi
