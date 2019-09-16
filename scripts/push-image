@@ -6,23 +6,17 @@ BUILD_ROOT=$FIRMWARE_PATH
 # Read the defaults
 source scripts/constants
 
-# If git tag is being build, tag the Docker image too
-if [[ ! -z "$TRAVIS_TAG" ]]; then
-	TAG=${TRAVIS_TAG#"v"}
-else
-	TAG=`cd $FIRMWARE_PATH && git rev-parse --short HEAD`
-fi
 docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG
 
 printf "${GREEN}Tagging main image as${NC} "
 printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}${NC}...\n"
-if [ ! -z "$TRAVIS_TAG" ]; then
+if [ ! -z "$GIT_TAG" ]; then
 	docker push $DOCKER_IMAGE_NAME:$TAG
 else
 	printf "${YELLOW}Not pushing the image, because this is not a tagged build"
 fi
 
 # Prebuild images for platforms
-if [ ! -z "$TRAVIS_TAG" ]; then
+if [ ! -z "$GIT_TAG" ]; then
 	source scripts/build-platform-images
 fi

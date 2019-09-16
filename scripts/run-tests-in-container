@@ -7,4 +7,10 @@ source scripts/constants
 printf "${GREEN}Running tests inside of container...${NC} ${BUILD_PLATFORM[*]} \n"
 rm -rf /home/travis/build/.build/*
 mkdir -p /home/travis/build/.build
-docker run --rm -v /home/travis/build/.build/:/firmware/test/unit_tests/.build/ -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests
+
+# Do this only if running under Travis CI
+if [[ ! -z $TRAVIS ]]; then
+    EXTRA_ARG=-v /home/travis/build/.build/:/firmware/test/unit_tests/.build/
+fi
+
+docker run --rm $EXTRA_ARG -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME-test /bin/run-tests

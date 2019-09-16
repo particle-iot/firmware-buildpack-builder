@@ -22,19 +22,8 @@ printf "${GREEN}Building main image based on${NC} "
 printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
 docker build -t $DOCKER_IMAGE_NAME -f $tmpfile $FIRMWARE_PATH
 echo
-
-# Create test Dockerfile
-echo "FROM ${DOCKER_IMAGE_NAME}" > $tmpfile
-cat Dockerfile.test.template >> $tmpfile
-# Build test image
-printf "${GREEN}Building test image${NC}...\n"
-docker build -f $tmpfile \
-	-t $DOCKER_IMAGE_NAME-test .
-rm $tmpfile
-echo
 echo
 
 printf "✨💫 ${GREEN}Built following images:${NC}\n"
 printf "👉 ${YELLOW}particle/firmware-buildpack-builder${NC} - just buildpack base + bin directory from this repo\n"
 printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME${NC} - above + firmware from \$FIRMWARE_PATH\n"
-printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME-test${NC} - above + gcc used for running unit tests\n"

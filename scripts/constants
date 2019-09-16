@@ -12,7 +12,17 @@ if [[ -z $FIRMWARE_PATH ]]; then
 	FIRMWARE_PATH=`pwd`
 fi
 
-function die {
-   echo "fatal error: $1"
-   exit 1
-}
+
+if [[ -z $TAG ]]; then
+   if [[ ! -z "$TRAVIS_TAG" ]]; then
+      TAG=${TRAVIS_TAG#"v"}
+      GIT_TAG=$TAG
+   else
+      TAG=$(cd $FIRMWARE_PATH && git tag -l --points-at HEAD)
+      if [[ -z $TAG ]]; then
+         TAG=$(cd $FIRMWARE_PATH && git rev-parse --short HEAD)
+      else
+         GIT_TAG=$TAG
+      fi
+   fi
+fi
