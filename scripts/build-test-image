@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Builds the image containing the firmware repo and a second one with test
+# dependencies installed
+
+# Exit on errors
+set -e
+
+tmpfile=$(mktemp /tmp/dockerfile.XXXXXX)
+
+# Create test Dockerfile
+echo "FROM ${DOCKER_IMAGE_NAME}" > $tmpfile
+cat Dockerfile.test.template >> $tmpfile
+# Build test image
+printf "${GREEN}Building test image${NC}...\n"
+docker build -f $tmpfile \
+	-t $DOCKER_IMAGE_NAME-test .
+rm $tmpfile
+echo
+echo
+
+printf "✨💫 ${GREEN}Built following images:${NC}\n"
+printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME-test${NC} - above + gcc used for running unit tests\n"
