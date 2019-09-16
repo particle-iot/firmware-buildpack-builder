@@ -12,9 +12,4 @@ if [ -z "$MAKE_VERBOSITY" ]; then
 fi
 
 cd $FIRMWARE_PATH/main
-eval "$PLATFORM_NAME make v=$MAKE_VERBOSITY"
-
-if [ "$MODULAR" == "y" ]; then
-  cd $FIRMWARE_PATH/modules
-  eval "$PLATFORM_NAME make clean all v=$MAKE_VERBOSITY"
-fi
+eval "$PLATFORM_NAME make v=$MAKE_VERBOSITY clean all"
