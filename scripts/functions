@@ -1,5 +1,41 @@
 #!/usr/bin/env bash
 
+function prepare_base_and_main_image {
+	local BUILDPACK_TAG="$1:$2"
+	local BASE_VERSION="$BUILDPACK_BUILDER_VERSION-$2"
+	local MAIN_VERSION="$3-$BASE_VERSION"
+	BUILD_ARGS=(
+		"BUILDPACK_BASE=$1" \
+		"BUILDPACK_BASE_VERSION=$2" \
+		"DEVICEOS_BASE_IMAGE=$DEVICEOS_BASE_IMAGE" \
+		"DEVICEOS_VERSION=$3" \
+		"BASE_VERSION=$BASE_VERSION" \
+		"DOCKER_IMAGE_NAME=$DOCKER_IMAGE_NAME" \
+		"MAIN_VERSION=$MAIN_VERSION"\
+	)
+
+	BUILD_ARGS=${BUILD_ARGS[@]/#/--build-arg }
+
+	# Create the base image with bin scripts
+	printf "${GREEN}Building base image based on${NC} "
+	printf "${YELLOW}$BUILDPACK_TAG${NC}...\n"
+	docker build -t "$DOCKER_IMAGE_NAME:$BASE_VERSION" ${BUILD_ARGS} \
+		--target=base .
+	echo
+
+	# Build main image
+	printf "${GREEN}Building main image based on${NC} "
+	printf "${YELLOW}$DOCKER_IMAGE_NAME:$BASE_VERSION${NC}...\n"
+	docker build -t "$DOCKER_IMAGE_NAME:$MAIN_VERSION" ${BUILD_ARGS} \
+		--target=main .
+	echo
+	echo
+
+	printf "✨💫 ${GREEN}Built following images:${NC}\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$BASE_VERSION${NC} - just buildpack base + bin directory from this repo\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$MAIN_VERSION${NC} - above + firmware from $3:$4\n"
+}
+
 function prebuild-platform {
 	PLATFORM=$1
 
@@ -23,28 +59,22 @@ function prebuild-platform {
 		fi
 	done
 
-	tmpfile=$(mktemp /tmp/dockerfile.XXXXXX)
-
-	# Create Dockerfile
-	echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_TAG}" > $tmpfile
-	echo "COPY bin /bin" >> $tmpfile
-	docker build -t particle/firmware-buildpack-builder -f $tmpfile .
-
-	cat Dockerfile.template > $tmpfile
-	cat Dockerfile.platform.template >> $tmpfile
+	prepare_base_and_main_image ${BUILDPACK_BASE} \
+		$BUILDPACK_TAG \
+		$TAG
 
 	printf "${GREEN}Building for${NC} "
 	printf "${PLATFORM}${NC}...\n"
-	docker build -f $tmpfile \
+
+	docker build -t "$DOCKER_IMAGE_NAME:$TAG-$PLATFORM" ${BUILD_ARGS} \
 		--build-arg PLATFORM=$PLATFORM \
 		--build-arg MODULAR=$MODULAR \
-		-t $DOCKER_IMAGE_NAME $FIRMWARE_PATH
+		--target=platform .
+
 	if [ $? -eq 0 ]; then
-		printf "${GREEN}Tagging${NC} "
+		printf "${GREEN}Tagged${NC} "
 		printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}-${PLATFORM}${NC}...\n"
-		docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
 		docker push $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
 	fi
-	rm $tmpfile
 	echo
 }

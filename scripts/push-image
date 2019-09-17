@@ -6,9 +6,7 @@ BUILD_ROOT=$FIRMWARE_PATH
 # Read the defaults
 source scripts/constants
 
-docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TAG
-
-printf "${GREEN}Tagging main image as${NC} "
+printf "${GREEN}Main image has been tagged as${NC} "
 printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}${NC}...\n"
 if [ ! -z "$GIT_TAG" ]; then
 	docker push $DOCKER_IMAGE_NAME:$TAG

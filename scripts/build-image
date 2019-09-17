@@ -9,8 +9,6 @@ BUILD_ROOT=$FIRMWARE_PATH
 
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 
-cp .dockerignore $BUILD_ROOT
-
 # Read the defaults
 source scripts/constants
 

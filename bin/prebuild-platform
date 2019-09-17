@@ -3,8 +3,6 @@
 # Setup constants
 source /bin/setup-hal-env
 
-PLATFORM_NAME="PLATFORM=$1"
-
 # export MAKE_VERBOSITY=1 to force verbosity,
 # otherwise disable verbosity by default.
 if [ -z "$MAKE_VERBOSITY" ]; then
@@ -12,4 +10,5 @@ if [ -z "$MAKE_VERBOSITY" ]; then
 fi
 
 cd $FIRMWARE_PATH/main
-eval "$PLATFORM_NAME make v=$MAKE_VERBOSITY clean all"
+echo "Prebuilding platform $PLATFORM"
+make PLATFORM=$PLATFORM v=$MAKE_VERBOSITY clean all

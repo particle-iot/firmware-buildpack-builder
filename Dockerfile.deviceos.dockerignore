@@ -1,8 +1,11 @@
 **/.git
+**/.*
+**/compile_commands.json
 scripts
 Dockerfile
 build/releases
 build/target
+build/jobs
 docs
 misc
 third_party/nrf5_sdk/nrf5_sdk/examples

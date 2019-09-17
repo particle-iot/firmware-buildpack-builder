@@ -4,6 +4,10 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+BUILDPACK_BUILDER_VERSION=$(git rev-parse --short HEAD)
+
+DEVICEOS_BASE_IMAGE=particle/device-os
+
 # Default base buildpack name and version
 BUILDPACK_BASE=particle/buildpack-hal
 BUILDPACK_VERSION=0.0.14

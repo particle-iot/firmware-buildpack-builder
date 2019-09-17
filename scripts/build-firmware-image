@@ -1,29 +1,14 @@
 #!/usr/bin/env bash
 
-# Builds the image containing the firmware repo and a second one with test
-# dependencies installed
+# Builds two images:
+# 1. Base image containing the base buildpack and the scripts
+# 2. Main image based on #1 with the DeviceOS repository
 
 # Exit on errors
 set -e
 
-tmpfile=$(mktemp /tmp/dockerfile.XXXXXX)
+source scripts/functions
 
-# Create the base image with bin scripts
-echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" > $tmpfile
-echo "COPY bin /bin" >> $tmpfile
-docker build -t particle/firmware-buildpack-builder -f $tmpfile .
-echo
-
-# Create main Dockerfile
-tmpfile=$(mktemp /tmp/dockerfile.XXXXXX)
-cat Dockerfile.template > $tmpfile
-# Build main image
-printf "${GREEN}Building main image based on${NC} "
-printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
-docker build -t $DOCKER_IMAGE_NAME -f $tmpfile $FIRMWARE_PATH
-echo
-echo
-
-printf "✨💫 ${GREEN}Built following images:${NC}\n"
-printf "👉 ${YELLOW}particle/firmware-buildpack-builder${NC} - just buildpack base + bin directory from this repo\n"
-printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME${NC} - above + firmware from \$FIRMWARE_PATH\n"
+prepare_base_and_main_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG
