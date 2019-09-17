@@ -19,7 +19,7 @@ WORKDIR /
 FROM ${DOCKER_IMAGE_NAME}:${BASE_VERSION} as main
 ENV FIRMWARE_REPO=not-used
 WORKDIR /
-COPY --from=deviceos /firmware /firmware
+COPY --from=deviceos / /firmware/
 
 # Platform image, prebuilding the modules required for building the application
 FROM ${DOCKER_IMAGE_NAME}:${MAIN_VERSION} as platform
