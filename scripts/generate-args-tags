@@ -48,7 +48,7 @@ BASE_VERSION=${BASE_VERSION}
 MAIN_VERSION=${MAIN_VERSION}
 EOL
 
-    echo "${DEVICEOS_VERSION}-$platform" > "${OUT_DIRECTORY}/tags_$platform"
+    echo "${TAG}-$platform" > "${OUT_DIRECTORY}/tags_$platform"
 
 done
 
