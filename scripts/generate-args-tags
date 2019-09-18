@@ -1,6 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+if [[ ! -z ${BASH_SOURCE[0]} ]]; then
+    cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+fi
 
 source scripts/constants
 source $FIRMWARE_PATH/.buildpackrc
