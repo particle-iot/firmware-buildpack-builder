@@ -4,7 +4,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-BUILDPACK_BUILDER_VERSION=$(git rev-parse --short HEAD)
+if [[ -f .git/short_ref ]]; then
+    BUILDPACK_BUILDER_VERSION=$(cat .git/short_ref)
+else
+    BUILDPACK_BUILDER_VERSION=$(git rev-parse --short HEAD)
+fi
 
 DEVICEOS_BASE_IMAGE=particle/device-os
 
