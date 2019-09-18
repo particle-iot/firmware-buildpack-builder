@@ -48,6 +48,8 @@ BASE_VERSION=${BASE_VERSION}
 MAIN_VERSION=${MAIN_VERSION}
 EOL
 
-echo "${MAIN_VERSION}" > "${REF}"
+    echo "${DEVICEOS_VERSION}-$platform" > "tags_$platform"
 
 done
+
+echo "${MAIN_VERSION}" > "${REF}"
