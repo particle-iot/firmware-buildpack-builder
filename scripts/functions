@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-function prepare_base_and_main_image {
-	local BUILDPACK_TAG="$1:$2"
-	local BASE_VERSION="$BUILDPACK_BUILDER_VERSION-$2"
-	local MAIN_VERSION="$3-$BASE_VERSION"
+function generate_build_args {
+	BUILDPACK_TAG="$1:$2"
+	BASE_VERSION="$BUILDPACK_BUILDER_VERSION-$2"
+	MAIN_VERSION="$3-$BASE_VERSION"
 	BUILD_ARGS=(
 		"BUILDPACK_BASE=$1" \
 		"BUILDPACK_BASE_VERSION=$2" \
@@ -15,7 +15,10 @@ function prepare_base_and_main_image {
 	)
 
 	BUILD_ARGS=${BUILD_ARGS[@]/#/--build-arg }
+}
 
+function prepare_base_and_main_image {
+	generate_build_args "$1" "$2" "$3"
 	# Create the base image with bin scripts
 	printf "${GREEN}Building base image based on${NC} "
 	printf "${YELLOW}$BUILDPACK_TAG${NC}...\n"
@@ -33,7 +36,23 @@ function prepare_base_and_main_image {
 
 	printf "✨💫 ${GREEN}Built following images:${NC}\n"
 	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$BASE_VERSION${NC} - just buildpack base + bin directory from this repo\n"
-	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$MAIN_VERSION${NC} - above + firmware from $3:$4\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$MAIN_VERSION${NC} - above + firmware from $DEVICEOS_BASE_IMAGE:$3\n"
+}
+
+function prepare_test_image {
+	generate_build_args "$1" "$2" "$3"
+
+	TEST_IMAGE_VERSION="$MAIN_VERSION-test"
+
+	printf "${GREEN}Building test image based on${NC} "
+	printf "${YELLOW}$DOCKER_IMAGE_NAME:$MAIN_VERSION${NC}...\n"
+	docker build -t "$DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION" ${BUILD_ARGS} \
+		--target=test .
+	echo
+	echo
+
+	printf "✨💫 ${GREEN}Built following images:${NC}\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION${NC} - main + gcc used for running unit tests\n\n"
 }
 
 function prebuild-platform {
