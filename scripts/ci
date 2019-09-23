@@ -26,6 +26,12 @@ source scripts/functions
 # Build device-os image
 source scripts/build-deviceos
 
+# Build base and main images
+prepare_base_and_main_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG
+
+
 # Prepare test image
 # FIXME: this uses only the main buildpack variation
 # and doesn't take into account another platform using different buildpack
