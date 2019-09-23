@@ -55,45 +55,52 @@ function prepare_test_image {
 	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION${NC} - main + gcc used for running unit tests\n\n"
 }
 
-function prebuild-platform {
-	PLATFORM=$1
+function platform_buildpack_tag {
+	local PLATFORM=$1
 
-	printf "${GREEN}Prebuilding platform${NC} "
-	printf "${YELLOW}${PLATFORM}${NC}...\n"
 	# Check if this platform requires different buildpack variation
 	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM^^}"
 	if [ -z ${!VARIATION} ]; then
 		BUILDPACK_TAG="${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}"
+		CUSTOM=0
 	else
 		BUILDPACK_TAG="${BUILDPACK_VERSION}-${!VARIATION}"
+		CUSTOM=1
+	fi
+}
+
+function prepare_platform_image {
+	PLATFORM=$1
+
+	printf "${GREEN}Preparing platform image for${NC} "
+	printf "${YELLOW}${PLATFORM}${NC}...\n"
+
+	platform_buildpack_tag $PLATFORM
+	if [ $CUSTOM -eq 1 ]; then
 		printf "   ${YELLOW}Custom buildpack variation:${NC} ${BUILDPACK_TAG}\n"
 	fi
-
-	# Check if platform requires modules to be prebuild
-	MODULAR=n
-	for modular_platform in "${MODULAR_PLATFORMS[@]}"
-	do
-		if [ $PLATFORM == $modular_platform ]; then
-			MODULAR=y
-		fi
-	done
 
 	prepare_base_and_main_image ${BUILDPACK_BASE} \
 		$BUILDPACK_TAG \
 		$TAG
 
-	printf "${GREEN}Building for${NC} "
-	printf "${PLATFORM}${NC}...\n"
+	local PREBUILD_PLATFORM=${PREBUILD:-1}
 
 	docker build -t "$DOCKER_IMAGE_NAME:$TAG-$PLATFORM" ${BUILD_ARGS} \
 		--build-arg PLATFORM=$PLATFORM \
-		--build-arg MODULAR=$MODULAR \
+		--build-arg PREBUILD=$PREBUILD_PLATFORM \
 		--target=platform .
 
 	if [ $? -eq 0 ]; then
-		printf "${GREEN}Tagged${NC} "
-		printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}-${PLATFORM}${NC}...\n"
-		docker push $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
+		printf "✨💫 ${GREEN}Built following images:${NC}\n"
+		printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$TAG-$PLATFORM${NC} - PREBUILD=$PREBUILD_PLATFORM\n\n"
 	fi
 	echo
+}
+
+function push_platform_image {
+	PLATFORM=$1
+
+	printf "${GREEN}Pushing to the repository${NC} \n"
+	docker push $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
 }

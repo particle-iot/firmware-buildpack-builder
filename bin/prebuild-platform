@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -z $PREBUILD ]] || [[ $PREBUILD != 1 ]]; then
+  # We weren't instructed to prebuild
+  exit 0
+fi
+
 # Setup constants
 source /bin/setup-hal-env
 

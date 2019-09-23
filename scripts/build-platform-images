@@ -15,11 +15,6 @@ source $FIRMWARE_PATH/.buildpackrc
 # Prebuild releases
 for platform in "${RELEASE_PLATFORMS[@]}"
 do
-	prebuild-platform $platform
-done
-
-# Prebuild prereleases
-for platform in "${PRERELEASE_PLATFORMS[@]}"
-do
-	prebuild-platform $platform
+	prepare_platform_image $platform
+	push_platform_image $platform
 done
