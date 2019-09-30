@@ -21,6 +21,12 @@ $ export DOCKER_IMAGE_NAME=particle/your-firmware-name
 $ export TAG=a.b.c-rc.X
 ```
 
+### Build sanitized DeviceOS source image
+
+```
+$ scripts/build-deviceos
+```
+
 ### To build a firmware buildpack (containing just toolchain + firmware) run:
 ```
 $ scripts/build-image
