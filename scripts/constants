@@ -30,6 +30,7 @@ if [[ -z $TAG ]]; then
          TAG=$(cd $FIRMWARE_PATH && git rev-parse --short HEAD)
       else
          GIT_TAG=$TAG
+         TAG=${GIT_TAG#"v"}
       fi
    fi
 fi
