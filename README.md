@@ -57,6 +57,13 @@ When doing a Travis CI job following scripts should be executed in order:
   2. Create prebuild platform images for each platform specified in [`.buildpackrc`](https://github.com/particle-iot/device-os/blob/develop/.buildpackrc) `RELEASE_PLATFORMS` and `PRERELEASE_PLATFORMS` (deprecated)
   3. Push platform images to Docker Hub
 
+## Flow inside Concourse
+
+We are no longer building and releasing platform buildpacks for `particle-iot/device-os` repository on Travis and moved this functionality to Concourse. The rough outline of the flow in Concourse is to:
+
+1. Add a task to run `scripts/generate-args-tags` and collect all the generated files
+2. Pass build argument files and necessary tag files to subsequent stages when building buildpack containers
+
 #### Example `.travis.yml` file
 
 If you're forking our [DeviceOS repository](https://github.com/particle-iot/device-os/) you can build your own images with firmware.
