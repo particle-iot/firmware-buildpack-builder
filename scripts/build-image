@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [[ ! -z $TRAVIS ]]; then
 	printf "${YELLOW}This script has been deprecated"
 	exit 0
@@ -25,4 +27,8 @@ fi
 # Read firmware build configuration
 source $FIRMWARE_PATH/.buildpackrc
 
-source scripts/build-firmware-image
+source scripts/functions
+
+prepare_base_and_main_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG
