@@ -27,7 +27,7 @@ EOL
 echo "${BASE_VERSION}" > "${BASE_TAGS}"
 echo "${MAIN_VERSION}" > "${MAIN_TAGS}"
 
-for platform in "${RELEASE_PLATFORMS[@]}"
+for platform in "${RELEASE_PLATFORMS[@]} ${PRERELEASE_PLATFORMS[@]}"
 do
 	# Check if this platform requires different buildpack variation
 	VARIATION="BUILDPACK_VARIATION_PLATFORM_${platform^^}"

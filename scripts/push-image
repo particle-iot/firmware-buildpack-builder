@@ -6,6 +6,11 @@ BUILD_ROOT=$FIRMWARE_PATH
 # Read the defaults
 source scripts/constants
 
+if [[ $PARTICLE_ORIGIN ]]; then
+	printf "${YELLOW}This script has been obsoleted by Concourse release pipeline\n"
+	exit 0
+fi
+
 printf "${GREEN}Main image has been tagged as${NC} "
 printf "${YELLOW}${DOCKER_IMAGE_NAME}:${TAG}${NC}...\n"
 if [ ! -z "$GIT_TAG" ]; then

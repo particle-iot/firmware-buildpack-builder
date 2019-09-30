@@ -20,7 +20,6 @@ if [[ -z $FIRMWARE_PATH ]]; then
 	FIRMWARE_PATH=`pwd`
 fi
 
-
 if [[ -z $TAG ]]; then
    if [[ ! -z "$TRAVIS_TAG" ]]; then
       TAG=${TRAVIS_TAG#"v"}
@@ -33,4 +32,12 @@ if [[ -z $TAG ]]; then
          GIT_TAG=$TAG
       fi
    fi
+fi
+
+GIT_ORIGIN=$(cd $FIRMWARE_PATH && git config --get remote.origin.url | cut -d ":" -f 2)
+
+if [[ ! $(echo "$GIT_ORIGIN" | grep 'particle-iot/') ]]; then
+   PARTICLE_ORIGIN=1
+else
+   PARTICLE_ORIGIN=0
 fi

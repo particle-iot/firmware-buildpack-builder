@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ ! -z $TRAVIS ]]; then
+	printf "${YELLOW}This script has been deprecated"
+	exit 0
+fi
+
 if [[ -z $FIRMWARE_PATH ]]; then
 	FIRMWARE_PATH=`pwd`
 fi

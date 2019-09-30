@@ -1,4 +1,4 @@
-# This file is here only for compatibility purposes for DeviceOS versions that don't have it
+# This file is here only for compatibility purposes for DeviceOS versions that don't have .dockerignore
 
 */**/.git
 **/compile_commands.json
