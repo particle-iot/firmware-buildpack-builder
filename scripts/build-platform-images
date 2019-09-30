@@ -13,7 +13,8 @@ source scripts/functions
 source $FIRMWARE_PATH/.buildpackrc
 
 # Prebuild releases
-for platform in "${RELEASE_PLATFORMS[@]} ${PRERELEASE_PLATFORMS[@]}"
+ALL_PLATFORMS=( "${RELEASE_PLATFORMS[@]}" "${PRERELEASE_PLATFORMS[@]}" )
+for platform in "${ALL_PLATFORMS[@]}"
 do
 	prepare_platform_image $platform
 	push_platform_image $platform
