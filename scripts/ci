@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# Exit on errors
+set -e
+
+if [[ -z $FIRMWARE_PATH ]]; then
+	FIRMWARE_PATH=`pwd`
+fi
+
+cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+
+# Read the defaults
+source scripts/constants
+
+if [ -z $DOCKER_IMAGE_NAME ]; then
+	printf "${RED}You need to provide DOCKER_IMAGE_NAME${NC}\n"
+	exit
+fi
+
+# Read firmware build configuration
+source $FIRMWARE_PATH/.buildpackrc
+
+# Load functions
+source scripts/functions
+
+# Build device-os image
+source scripts/build-deviceos
+
+# Build base and main images
+prepare_base_and_main_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG
+
+
+# Prepare test image
+# FIXME: this uses only the main buildpack variation
+# and doesn't take into account another platform using different buildpack
+prepare_test_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG
+
+# Do this only if running under Travis CI
+if [[ ! -z $TRAVIS ]]; then
+    EXTRA_ARG="-v /home/travis/build/.build/:/firmware/test/unit_tests/.build/"
+    rm -rf /home/travis/build/.build/*
+    mkdir -p /home/travis/build/.build
+fi
+
+printf "${GREEN}Running tests inside of container $DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION...${NC}\n"
+
+docker run --rm $EXTRA_ARG -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION /bin/run-tests

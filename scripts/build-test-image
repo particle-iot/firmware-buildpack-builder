@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Builds the image containing the firmware repo and a second one with test
+# dependencies installed
+
+# Exit on errors
+set -e
+
+if [[ -z $FIRMWARE_PATH ]]; then
+	FIRMWARE_PATH=`pwd`
+fi
+
+cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+
+source scripts/constants
+source $FIRMWARE_PATH/.buildpackrc
+source scripts/functions
+
+prepare_test_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG

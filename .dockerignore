@@ -1,3 +1,2 @@
-.git
-scripts
-Dockerfile
+*
+!/bin/

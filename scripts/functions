@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+function generate_build_args {
+	BUILDPACK_TAG="$1:$2"
+	BASE_VERSION="$BUILDPACK_BUILDER_VERSION-$2"
+	MAIN_VERSION="$3-$BASE_VERSION"
+	BUILD_ARGS=(
+		"BUILDPACK_BASE=$1" \
+		"BUILDPACK_BASE_VERSION=$2" \
+		"DEVICEOS_BASE_IMAGE=$DEVICEOS_BASE_IMAGE" \
+		"DEVICEOS_VERSION=$3" \
+		"BASE_VERSION=$BASE_VERSION" \
+		"DOCKER_IMAGE_NAME=$DOCKER_IMAGE_NAME" \
+		"MAIN_VERSION=$MAIN_VERSION"\
+	)
+
+	BUILD_ARGS=${BUILD_ARGS[@]/#/--build-arg }
+}
+
+function prepare_base_and_main_image {
+	generate_build_args "$1" "$2" "$3"
+	# Create the base image with bin scripts
+	printf "${GREEN}Building base image based on${NC} "
+	printf "${YELLOW}$BUILDPACK_TAG${NC}...\n"
+	docker build -t "$DOCKER_IMAGE_NAME:$BASE_VERSION" ${BUILD_ARGS} \
+		--target=base .
+	echo
+
+	# Build main image
+	printf "${GREEN}Building main image based on${NC} "
+	printf "${YELLOW}$DOCKER_IMAGE_NAME:$BASE_VERSION${NC}...\n"
+	docker build -t "$DOCKER_IMAGE_NAME:$MAIN_VERSION" ${BUILD_ARGS} \
+		--target=main .
+	echo
+	echo
+
+	printf "✨💫 ${GREEN}Built following images:${NC}\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$BASE_VERSION${NC} - just buildpack base + bin directory from this repo\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$MAIN_VERSION${NC} - above + firmware from $DEVICEOS_BASE_IMAGE:$3\n"
+}
+
+function prepare_test_image {
+	generate_build_args "$1" "$2" "$3"
+
+	TEST_IMAGE_VERSION="$MAIN_VERSION-test"
+
+	printf "${GREEN}Building test image based on${NC} "
+	printf "${YELLOW}$DOCKER_IMAGE_NAME:$MAIN_VERSION${NC}...\n"
+	docker build -t "$DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION" ${BUILD_ARGS} \
+		--target=test .
+	echo
+	echo
+
+	printf "✨💫 ${GREEN}Built following images:${NC}\n"
+	printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION${NC} - main + gcc used for running unit tests\n\n"
+}
+
+function platform_buildpack_tag {
+	local PLATFORM=$1
+
+	# Check if this platform requires different buildpack variation
+	VARIATION="BUILDPACK_VARIATION_PLATFORM_${PLATFORM^^}"
+	if [ -z ${!VARIATION} ]; then
+		BUILDPACK_TAG="${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}"
+		CUSTOM=0
+	else
+		BUILDPACK_TAG="${BUILDPACK_VERSION}-${!VARIATION}"
+		CUSTOM=1
+	fi
+}
+
+function prepare_platform_image {
+	PLATFORM=$1
+
+	printf "${GREEN}Preparing platform image for${NC} "
+	printf "${YELLOW}${PLATFORM}${NC}...\n"
+
+	platform_buildpack_tag $PLATFORM
+	if [ $CUSTOM -eq 1 ]; then
+		printf "   ${YELLOW}Custom buildpack variation:${NC} ${BUILDPACK_TAG}\n"
+	fi
+
+	prepare_base_and_main_image ${BUILDPACK_BASE} \
+		$BUILDPACK_TAG \
+		$TAG
+
+	local PREBUILD_PLATFORM=${PREBUILD:-1}
+
+	docker build -t "$DOCKER_IMAGE_NAME:$TAG-$PLATFORM" ${BUILD_ARGS} \
+		--build-arg PLATFORM=$PLATFORM \
+		--build-arg PREBUILD=$PREBUILD_PLATFORM \
+		--target=platform .
+
+	if [ $? -eq 0 ]; then
+		printf "✨💫 ${GREEN}Built following images:${NC}\n"
+		printf "👉 ${YELLOW}$DOCKER_IMAGE_NAME:$TAG-$PLATFORM${NC} - PREBUILD=$PREBUILD_PLATFORM\n\n"
+	fi
+	echo
+}
+
+function push_platform_image {
+	PLATFORM=$1
+
+	printf "${GREEN}Pushing to the repository${NC} \n"
+	docker push $DOCKER_IMAGE_NAME:$TAG-$PLATFORM
+}

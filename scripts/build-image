@@ -1,14 +1,20 @@
-#!/bin/bash
-# assume this is invoked from the root of the firmware repo
-FIRMWARE_PATH=`pwd`
+#!/usr/bin/env bash
+
+set -e
+
+if [[ ! -z $TRAVIS ]]; then
+	printf "${YELLOW}This script has been deprecated"
+	exit 0
+fi
+
+if [[ -z $FIRMWARE_PATH ]]; then
+	FIRMWARE_PATH=`pwd`
+fi
+
 echo FIRMWARE_PATH=$FIRMWARE_PATH
 BUILD_ROOT=$FIRMWARE_PATH
 
-# get to the root of the buildpack
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
-
-cp .dockerignore $BUILD_ROOT
-echo "build/releases" >> $BUILD_ROOT/.dockerignore
 
 # Read the defaults
 source scripts/constants
@@ -21,29 +27,8 @@ fi
 # Read firmware build configuration
 source $FIRMWARE_PATH/.buildpackrc
 
-# Create main Dockerfile
+source scripts/functions
 
-Dockerfile=$BUILD_ROOT/Dockerfile
-echo "FROM ${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" > $Dockerfile
-cat Dockerfile.template >> $Dockerfile
-# Build main image
-printf "${GREEN}Building main image based on${NC} "
-printf "${YELLOW}${BUILDPACK_BASE}:${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}${NC}...\n"
-pushd $BUILD_ROOT
-cmd="docker build -t $DOCKER_IMAGE_NAME --build-arg FIRMWARE_PATH=$FIRMWARE_PATH $BUILD_ROOT"
-echo $cmd
-$cmd || die
-popd
-echo
-
-# Create test Dockerfile
-DockerfileTest=$BUILD_ROOT/Dockerfile.test
-echo "FROM ${DOCKER_IMAGE_NAME}" > $DockerfileTest
-cat Dockerfile.test.template >> $DockerfileTest
-# Build test image
-printf "${GREEN}Building test image${NC}...\n"
-pushd $BUILD_ROOT
-docker build -f $DockerfileTest \
-	-t $DOCKER_IMAGE_NAME-test . || die
-popd
-echo
+prepare_base_and_main_image ${BUILDPACK_BASE} \
+    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    $TAG

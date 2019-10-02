@@ -1,6 +1,0 @@
-
-ARG FIRMWARE_PATH
-ENV FIRMWARE_REPO=not-used
-WORKDIR /
-COPY buildpack/bin /bin
-COPY . /firmware

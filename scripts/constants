@@ -4,11 +4,41 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+if [[ -f .git/short_ref ]]; then
+    BUILDPACK_BUILDER_VERSION=$(cat .git/short_ref)
+else
+    BUILDPACK_BUILDER_VERSION=$(git rev-parse --short HEAD)
+fi
+
+DEVICEOS_BASE_IMAGE=particle/device-os
+
 # Default base buildpack name and version
 BUILDPACK_BASE=particle/buildpack-hal
-BUILDPACK_VERSION=0.0.14
+BUILDPACK_VERSION=0.0.16
 
-function die {
-   echo "fatal error: $1"
-   exit 1
-}
+if [[ -z $FIRMWARE_PATH ]]; then
+	FIRMWARE_PATH=`pwd`
+fi
+
+if [[ -z $TAG ]]; then
+   if [[ ! -z "$TRAVIS_TAG" ]]; then
+      TAG=${TRAVIS_TAG#"v"}
+      GIT_TAG=$TAG
+   else
+      TAG=$(cd $FIRMWARE_PATH && git tag -l --points-at HEAD)
+      if [[ -z $TAG ]]; then
+         TAG=$(cd $FIRMWARE_PATH && git rev-parse --short HEAD)
+      else
+         GIT_TAG=$TAG
+         TAG=${GIT_TAG#"v"}
+      fi
+   fi
+fi
+
+GIT_ORIGIN=$(cd $FIRMWARE_PATH && git config --get remote.origin.url | cut -d ":" -f 2)
+
+if [[ ! $(echo "$GIT_ORIGIN" | grep 'particle-iot/') ]]; then
+   PARTICLE_ORIGIN=1
+else
+   PARTICLE_ORIGIN=0
+fi

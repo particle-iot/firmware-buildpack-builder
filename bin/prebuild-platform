@@ -1,9 +1,12 @@
 #!/bin/bash
 
+if [[ -z $PREBUILD ]] || [[ $PREBUILD != 1 ]]; then
+  # We weren't instructed to prebuild
+  exit 0
+fi
+
 # Setup constants
 source /bin/setup-hal-env
-
-PLATFORM_NAME="PLATFORM=$1"
 
 # export MAKE_VERBOSITY=1 to force verbosity,
 # otherwise disable verbosity by default.
@@ -12,9 +15,5 @@ if [ -z "$MAKE_VERBOSITY" ]; then
 fi
 
 cd $FIRMWARE_PATH/main
-eval "$PLATFORM_NAME make v=$MAKE_VERBOSITY"
-
-if [ "$MODULAR" == "y" ]; then
-  cd $FIRMWARE_PATH/modules
-  eval "$PLATFORM_NAME make clean all v=$MAKE_VERBOSITY"
-fi
+echo "Prebuilding platform $PLATFORM"
+make PLATFORM=$PLATFORM v=$MAKE_VERBOSITY clean all

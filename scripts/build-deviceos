@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+
+# Read the defaults
+source scripts/constants
+
+# Shouldn't be needed if BuildKit is used
+if [[ $DOCKER_BUILDKIT != 1 ]]; then
+    cp Dockerfile.deviceos.dockerignore ${FIRMWARE_PATH}/.dockerignore
+fi
+
+# Create the DeviceOS image containing just its sources
+printf "${YELLOW}Creating base DeviceOS container version ${TAG}${NC}...\n"
+docker build -t "${DEVICEOS_BASE_IMAGE}:${TAG}" -f ./Dockerfile.deviceos ${FIRMWARE_PATH}
+echo

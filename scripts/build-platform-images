@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Builds separate image for each platform by precompiling firmware for
+# each target
+
+# Exit on errors
+set -e
+
+source scripts/constants
+source scripts/functions
+
+# Read firmware build configuration
+source $FIRMWARE_PATH/.buildpackrc
+
+# Prebuild releases
+ALL_PLATFORMS=( "${RELEASE_PLATFORMS[@]}" "${PRERELEASE_PLATFORMS[@]}" )
+for platform in "${ALL_PLATFORMS[@]}"
+do
+	prepare_platform_image $platform
+	push_platform_image $platform
+done
