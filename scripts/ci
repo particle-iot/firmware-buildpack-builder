@@ -28,7 +28,7 @@ source scripts/build-deviceos
 
 # Build base and main images
 prepare_base_and_main_image ${BUILDPACK_BASE} \
-    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    ${BUILDPACK_VERSION} \
     $TAG
 
 
@@ -36,7 +36,7 @@ prepare_base_and_main_image ${BUILDPACK_BASE} \
 # FIXME: this uses only the main buildpack variation
 # and doesn't take into account another platform using different buildpack
 prepare_test_image ${BUILDPACK_BASE} \
-    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    ${BUILDPACK_VERSION} \
     $TAG
 
 # Do this only if running under Travis CI

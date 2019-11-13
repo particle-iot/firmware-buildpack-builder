@@ -30,5 +30,5 @@ source $FIRMWARE_PATH/.buildpackrc
 source scripts/functions
 
 prepare_base_and_main_image ${BUILDPACK_BASE} \
-    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    ${BUILDPACK_VERSION} \
     $TAG

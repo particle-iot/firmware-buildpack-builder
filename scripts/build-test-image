@@ -17,5 +17,5 @@ source $FIRMWARE_PATH/.buildpackrc
 source scripts/functions
 
 prepare_test_image ${BUILDPACK_BASE} \
-    "${BUILDPACK_VERSION}-${BUILDPACK_VARIATION}" \
+    ${BUILDPACK_VERSION} \
     $TAG
