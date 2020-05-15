@@ -32,7 +32,7 @@ RUN /bin/prebuild-platform
 # Test image adding on things required for running the unit tests
 FROM ${DOCKER_IMAGE_NAME}:${MAIN_VERSION} as test
 RUN sed -i -e 's/http:\/\/archive/mirror:\/\/mirrors/' -e 's/\/ubuntu\//\/mirrors.txt/' /etc/apt/sources.list \
-  && apt-get update -q && apt-get install -qy wget gcc-4.9 g++-4.9 parallel \
+  && apt-get update -q && apt-get install -qy wget gcc-4.9 g++-4.9 parallel zlib1g-dev \
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 \
   && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 60 \
   && apt-get clean && apt-get purge \
