@@ -14,12 +14,38 @@ COPY bin /bin
 FROM ${DEVICEOS_BASE_IMAGE}:${DEVICEOS_VERSION} as deviceos
 WORKDIR /
 
-# Main image combining base image and DeviceOS sources
+# Base image
+FROM ${BUILDPACK_BASE}:${BUILDPACK_BASE_VERSION} as builder
+
+RUN \
+  apt-get update -q \
+  && apt-get install -qy wget vim-common parallel libarchive-zip-perl \
+  && curl https://prtcl.s3.amazonaws.com/install-apt.sh | sh \
+  && apt-get clean \
+  && apt-get purge \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && cat /etc/*release
+
+COPY --from=deviceos / /firmware/
+ENV PATH="/root/.particle/bin":$PATH
+RUN \
+  prtcl toolchain:install source:/firmware \
+  && prtcl toolchain:use source:/firmware \
+  && echo ":::: Using $(which arm-none-eabi-gcc)" \
+  && echo ":::: With directories and files" \
+  && ls -la /root/.particle \
+  && ls -la /root/.particle/toolchains \
+  && ls -la /root/.particle/bin
+
+# Main image combining base image, toolchain, and DeviceOS sources
 # Some sensible default
 FROM ${DOCKER_IMAGE_NAME}:${BASE_VERSION} as main
 ENV FIRMWARE_REPO=not-used
 WORKDIR /
 COPY --from=deviceos / /firmware/
+COPY --from=builder /root/.particle /root/.particle
+ENV PATH="/root/.particle/bin":$PATH
+
 
 # Platform image, prebuilding the modules required for building the application
 FROM ${DOCKER_IMAGE_NAME}:${MAIN_VERSION} as platform
