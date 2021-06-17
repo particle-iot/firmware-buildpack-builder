@@ -22,20 +22,15 @@ WORKDIR /
 COPY --from=deviceos / /firmware/
 
 # This could be a separate step, but for now to simplify CI updates
-# This is integrated into the main step
+# this is integrated into the main step
+ENV PATH="/root/.particle/bin":$PATH
 RUN \
-  sed -i -e 's/http:\/\/archive/mirror:\/\/mirrors/' -e 's/\/ubuntu\//\/mirrors.txt/' /etc/apt/sources.list \
-  apt-get update -q \
-  && apt-get install -qy wget parallel libarchive-zip-perl \
-  && curl https://prtcl.s3.amazonaws.com/install-apt.sh | sh \
+  curl https://prtcl.s3.amazonaws.com/install-apt.sh | sh \
   && apt-get clean \
   && apt-get purge \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && cat /etc/*release
-
-ENV PATH="/root/.particle/bin":$PATH
-RUN \
-  prtcl toolchain:install source:/firmware \
+  && cat /etc/*release \
+  && prtcl toolchain:install source:/firmware \
   && prtcl toolchain:use source:/firmware \
   && echo ":::: Using $(which arm-none-eabi-gcc)" \
   && echo ":::: With directories and files" \
