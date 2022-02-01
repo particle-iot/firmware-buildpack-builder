@@ -48,8 +48,20 @@ RUN /bin/prebuild-platform
 
 # Test image adding on things required for running the unit tests
 FROM ${DOCKER_IMAGE_NAME}:${MAIN_VERSION} as test
-RUN apt-get update -q && apt-get install -qy gcc-4.9 g++-4.9 zlib1g-dev \
-  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 \
-  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 60 \
+RUN apt-get update -qy \
+  && apt-get install -qy software-properties-common \
+  && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
+  && apt-get update -qy \
+  && apt-get install gcc-11 g++-11 -qy \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 \
+                         --slave /usr/bin/g++ g++ /usr/bin/g++-11 \
+                         --slave /usr/bin/gcov gcov /usr/bin/gcov-11 \
+                         --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-11 \
+                         --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-11 \
+  && update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-11 110 \
+  && add-apt-repository --remove ppa:ubuntu-toolchain-r/test -y \
   && apt-get clean && apt-get purge \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && gcc --version \
+  && g++ --version
+
