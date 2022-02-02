@@ -14,7 +14,7 @@ DEVICEOS_BASE_IMAGE=particle/device-os
 
 # Default base buildpack name and version
 BUILDPACK_BASE=particle/buildpack-hal
-BUILDPACK_VERSION=0.3.0
+BUILDPACK_VERSION=feature-update-base-to-20.04-and-gcc-11-9485708
 
 if [[ -z $FIRMWARE_PATH ]]; then
 	FIRMWARE_PATH=`pwd`
