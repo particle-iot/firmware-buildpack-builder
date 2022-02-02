@@ -68,7 +68,7 @@ RUN apt-get update -qy \
 SHELL ["/bin/bash", "--login", "-i", "-c"]
 ENV NVM_DIR=/usr/local/nvm
 ENV NODE_VERSION=12
-RUN mkdir -p $NVM_DIR
+RUN mkdir -p $NVM_DIR \
   && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash \
   && source /root/.bashrc \
   && nvm install $NODE_VERSION \
