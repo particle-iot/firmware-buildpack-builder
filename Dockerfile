@@ -52,13 +52,17 @@ RUN apt-get update -qy \
   && apt-get install -qy software-properties-common \
   && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
   && apt-get update -qy \
-  && apt-get install gcc-11 g++-11 -qy \
-  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 \
+  && apt-get install gcc g++ gcc-11 g++-11 -qy \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 1100 \
                          --slave /usr/bin/g++ g++ /usr/bin/g++-11 \
                          --slave /usr/bin/gcov gcov /usr/bin/gcov-11 \
                          --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-11 \
                          --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-11 \
-  && update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-11 110 \
+  && update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-11 1100 \
+  && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 1100 \
+  && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 1100 \
+  && update-alternatives --set cc /usr/bin/gcc \
+  && update-alternatives --set c++ /usr/bin/g++ \
   && add-apt-repository --remove ppa:ubuntu-toolchain-r/test -y \
   && apt-get clean && apt-get purge \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
