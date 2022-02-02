@@ -8,7 +8,7 @@ ARG MAIN_VERSION
 
 # Base image, based on a buildpack with binaries from this repo
 FROM ${BUILDPACK_BASE}:${BUILDPACK_BASE_VERSION} as base
-COPY bin /bin
+COPY bin /usr/bin
 
 # DeviceOS image, containing just the DeviceOS sources
 FROM ${DEVICEOS_BASE_IMAGE}:${DEVICEOS_VERSION} as deviceos
