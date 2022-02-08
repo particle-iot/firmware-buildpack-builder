@@ -48,4 +48,10 @@ fi
 
 printf "${GREEN}Running tests inside of container $DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION...${NC}\n"
 
-docker run --rm $EXTRA_ARG -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION /bin/run-tests
+if [ -z $BUILDPACK_NORM ]; then
+    RMARG="--rm"
+else
+    RMARG=""
+fi
+
+docker run $RMARG $EXTRA_ARG -w /firmware --env BUILD_PLATFORM="${BUILD_PLATFORM[*]}" $DOCKER_IMAGE_NAME:$TEST_IMAGE_VERSION /bin/run-tests
