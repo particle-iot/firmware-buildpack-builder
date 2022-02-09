@@ -14,7 +14,7 @@ DEVICEOS_BASE_IMAGE=particle/device-os
 
 # Default base buildpack name and version
 BUILDPACK_BASE=particle/buildpack-hal
-BUILDPACK_VERSION=0.2.0
+BUILDPACK_VERSION=0.3.0
 
 if [[ -z $FIRMWARE_PATH ]]; then
 	FIRMWARE_PATH=`pwd`
@@ -38,7 +38,7 @@ fi
 GIT_ORIGIN=$(cd $FIRMWARE_PATH && git config --get remote.origin.url | cut -d ":" -f 2)
 
 if [[ ! $(echo "$GIT_ORIGIN" | grep 'particle-iot/') ]]; then
-   PARTICLE_ORIGIN=1
+   PARTICLE_ORIGIN=${PARTICLE_ORIGIN:-1}
 else
-   PARTICLE_ORIGIN=0
+   PARTICLE_ORIGIN=${PARTICLE_ORIGIN:-0}
 fi

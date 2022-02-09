@@ -8,7 +8,7 @@ ARG MAIN_VERSION
 
 # Base image, based on a buildpack with binaries from this repo
 FROM ${BUILDPACK_BASE}:${BUILDPACK_BASE_VERSION} as base
-COPY bin /bin
+COPY bin /usr/bin
 
 # DeviceOS image, containing just the DeviceOS sources
 FROM ${DEVICEOS_BASE_IMAGE}:${DEVICEOS_VERSION} as deviceos
@@ -48,8 +48,35 @@ RUN /bin/prebuild-platform
 
 # Test image adding on things required for running the unit tests
 FROM ${DOCKER_IMAGE_NAME}:${MAIN_VERSION} as test
-RUN apt-get update -q && apt-get install -qy gcc-4.9 g++-4.9 zlib1g-dev \
-  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 \
-  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 60 \
+RUN apt-get update -qy \
+  && apt-get install -qy software-properties-common \
+  && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
+  && apt-get update -qy \
+  && apt-get install gcc g++ gcc-11 g++-11 -qy \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 1100 \
+                         --slave /usr/bin/g++ g++ /usr/bin/g++-11 \
+                         --slave /usr/bin/gcov gcov /usr/bin/gcov-11 \
+                         --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-11 \
+                         --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-11 \
+  && update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-11 1100 \
+  && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 1100 \
+  && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 1100 \
+  && update-alternatives --set cc /usr/bin/gcc \
+  && update-alternatives --set c++ /usr/bin/g++ \
+  && add-apt-repository --remove ppa:ubuntu-toolchain-r/test -y \
   && apt-get clean && apt-get purge \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && gcc --version \
+  && g++ --version
+
+SHELL ["/bin/bash", "--login", "-i", "-c"]
+ENV NVM_DIR=/usr/local/nvm
+ENV NODE_VERSION=12
+RUN mkdir -p $NVM_DIR \
+  && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash \
+  && source /root/.bashrc \
+  && nvm install $NODE_VERSION \
+  && nvm alias default $NODE_VERSION \
+  && nvm use default
+SHELL ["/bin/bash", "--login", "-c"]
+
