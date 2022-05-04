@@ -25,7 +25,8 @@ COPY --from=deviceos / /firmware/
 # this is integrated into the main step
 ENV PATH="/root/.particle/bin":$PATH
 RUN \
-  curl https://prtcl.s3.amazonaws.com/install-apt.sh | sh \
+  printf 'Acquire::http::Timeout "30";\nAcquire::ftp::Timeout "30";\nAcquire::Retries "5";\n' | sudo tee /etc/apt/apt.conf.d/99timeout > /dev/null \
+  && curl https://prtcl.s3.amazonaws.com/install-apt.sh | sh \
   && apt-get clean \
   && apt-get purge \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
