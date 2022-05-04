@@ -30,7 +30,7 @@ RUN \
   && apt-get purge \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && cat /etc/*release \
-  && prtcl toolchain:install source:/firmware \
+  && prtcl toolchain:install source:/firmware --quiet \
   && prtcl toolchain:use source:/firmware \
   && echo ":::: Using $(which arm-none-eabi-gcc)" \
   && echo ":::: With directories and files" \
