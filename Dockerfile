@@ -35,6 +35,8 @@ RUN \
   && cat /etc/*release \
   && prtcl toolchain:install source:/firmware --quiet \
   && prtcl toolchain:use source:/firmware \
+  # use the distro make instead of make 3.82 shipped with buildtools
+  && rm -f /root/.particle/bin/make \
   && echo ":::: Using $(which arm-none-eabi-gcc)" \
   && echo ":::: With directories and files" \
   && ls -la /root/.particle \
