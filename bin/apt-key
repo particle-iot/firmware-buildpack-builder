@@ -1,0 +1,11 @@
+#!/bin/sh
+# apt-key was removed in ubuntu 24.04+, this shim supports 'apt-key add' usage
+# in prtcl install-apt.sh
+set -e
+
+if [ "$1" = "add" ]; then
+    cat > "/etc/apt/trusted.gpg.d/apt-key-shim-$$.asc"
+else
+    echo "apt-key shim: unsupported invocation: $*" >&2
+    exit 1
+fi
