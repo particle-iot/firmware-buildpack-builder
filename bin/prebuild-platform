@@ -16,4 +16,10 @@ fi
 
 cd $FIRMWARE_PATH/main
 echo "Prebuilding platform $PLATFORM"
-make PLATFORM=$PLATFORM v=$MAKE_VERBOSITY clean all
+
+MAKE_JOBS=""
+if grep -qs NOTPARALLEL $FIRMWARE_PATH/modules/makefile; then
+  MAKE_JOBS="-j ${PREBUILD_MAKE_JOBS:-4}"
+fi
+
+make PLATFORM=$PLATFORM v=$MAKE_VERBOSITY clean all $MAKE_JOBS

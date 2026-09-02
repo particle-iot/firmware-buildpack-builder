@@ -47,6 +47,7 @@ RUN \
 FROM ${DOCKER_IMAGE_NAME}:${MAIN_VERSION} as platform
 ARG PLATFORM
 ARG PREBUILD
+ARG PREBUILD_MAKE_JOBS
 ENV FIRMWARE_REPO=not-used
 # PLATFORM and PREBUILD are passed as environment variables to RUN commands
 RUN /bin/prebuild-platform
